@@ -1,21 +1,22 @@
 package architeture.hexagonal.models.event;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface EventRepository {
 
     Event save(Event event);
 
-    Event findById(UUID id);
+    Optional<Event> findById(UUID id);
 
     List<Event> findAll();
 
     void deletById(UUID id);
 
-    Page<EventAdressProjection> findUpcomingEvents();
+    Page<EventAdressProjection> findUpcomingEvents(int page, int size);
 
-    Page<EventAddressProjection> findFilteredEvents(String city, String uf, String startDate, String endDate);
+    Page<EventAddressProjection> findFilteredEvents(String city, String uf, Date startDate, Date endDate, int page, int size);
 
     List<EventAdressProjection> findEventsByTitle(String title);
 

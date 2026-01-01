@@ -54,7 +54,7 @@ public class EventServiceImp implements EventUseCases {
         if (data.image() != null) {
             imgUrl = this.uploadImg(data.image());
         }
-        Event newEvent = mapper.toEntity(data, imgUrl);
+        Event newEvent = mapper.dtoToEntity(data, imgUrl);
         repository.save(newEvent);
 
         if (Boolean.FALSE.equals(data.remote())) {
@@ -65,8 +65,7 @@ public class EventServiceImp implements EventUseCases {
     }
 
     public List<EventResponseDTO> getUpcomingEvents(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<EventAddressProjection> eventsPage = this.repository.findUpcomingEvents(new Date(), pageable);
+        Page<EventAddressProjection> eventsPage = this.repository.findUpcomingEvents(page, size);
         return eventsPage.map(event -> new EventResponseDTO(
                         event.getId(),
                         event.getTitle(),
@@ -113,8 +112,7 @@ public class EventServiceImp implements EventUseCases {
             throw new IllegalArgumentException("Invalid admin key");
         }
 
-        this.repository.delete(this.repository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Event not found")));
+        this.repository.deleteById(eventId);
 
     }
 
@@ -142,9 +140,7 @@ public class EventServiceImp implements EventUseCases {
         startDate = (startDate != null) ? startDate : new Date(0);
         endDate = (endDate != null) ? endDate : new Date();
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, pageable);
+        Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, page, size);
         return eventsPage.map(event -> new EventResponseDTO(
                         event.getId(),
                         event.getTitle(),
