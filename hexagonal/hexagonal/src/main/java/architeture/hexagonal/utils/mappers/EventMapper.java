@@ -1,6 +1,7 @@
 package architeture.hexagonal.utils.mappers;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaEventEntity;
+import architeture.hexagonal.models.event.EventDetailsDTO;
 import com.eventostec.api.domain.event.Event;
 import com.eventostec.api.domain.event.EventRequestDTO;
 import org.mapstruct.Mapper;
@@ -9,6 +10,8 @@ import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
@@ -43,6 +46,30 @@ public interface EventMapper {
             @Mapping(source = "jpa.ImgUrl", target = "imgUrl"),
     })
     Event jpaToDomain(JpaEventEntity jpa);
+
+    default EventDetailsDTO domainToDetailsDto(Event event, optional<Adress> adress, List<Coupon> coupons) {
+        String city = adress.map(Adress::getCity).orElse("");
+        String uf = adress.map(Adress::getUf).orElse("");
+        List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()
+                .map(coupon -> new EventDetailsDTO.CouponDTO(
+                        coupon.getCode(),
+                        coupon.getDiscount(),
+                        coupon.getValid()))
+                .collect(Collectors.toList());
+
+        return new EventDetailsDTO(
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDate(),
+                city,
+                uf,
+                event.getImgUrl(),
+                event.getEventUrl(),
+                couponDTOs);
+    }
+
+    }
 
 
     @Named("epochToDate")

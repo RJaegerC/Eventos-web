@@ -7,12 +7,14 @@ import architeture.hexagonal.models.event.EventRequestDTO;
 import architeture.hexagonal.utils.mappers.EventMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Repository
 public class EventRepositoryImp implements EventRepository {
 
     private final JpaEventRepository jpaEventRepository;
