@@ -12,7 +12,7 @@ public interface EventRepository {
 
     List<Event> findAll();
 
-    void deletById(UUID id);
+    void deleteById(UUID id);
 
     Page<EventAdressProjection> findUpcomingEvents(int page, int size);
 

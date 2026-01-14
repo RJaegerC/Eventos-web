@@ -1,14 +1,15 @@
 package architeture.hexagonal.adapters.outbound.repositories;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaEventEntity;
-import architeture.hexagonal.models.event.Event;
-import architeture.hexagonal.models.event.EventRepository;
-import architeture.hexagonal.models.event.EventRequestDTO;
+import architeture.hexagonal.models.event.*;
 import architeture.hexagonal.utils.mappers.EventMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,66 +19,53 @@ import java.util.stream.Collectors;
 public class EventRepositoryImp implements EventRepository {
 
     private final JpaEventRepository jpaEventRepository;
+    private final EventMapper mapper;
 
     @Autowired
-    private EventMapper mapper;
-
-    public EventRepositoryImp(JpaEventRepository jpaEventRepository) {
+    public EventRepositoryImp(JpaEventRepository jpaEventRepository, EventMapper mapper) {
         this.jpaEventRepository = jpaEventRepository;
-        this.eventMapper = new EventMapper() {
-            @Override
-            public Event toEntity(EventRequestDTO dto, String imgUrl) {
-                return null;
-            }
-
-            @Override
-            public EventRequestDTO toDto(Event entity) {
-                return null;
-            }
-        }
+        this.mapper = mapper;
     }
 
     @Override
     public Event save(Event event) {
-        JpaEventEntity eventEntity = new JpaEventEntity(event);
-        this.jpaEventRepository.save(eventEntity);
-        return eventEntity.map(mapper::jpaToDomain);
+        JpaEventEntity savedEntity = this.jpaEventRepository.save(new JpaEventEntity(event));
+        return mapper.jpaToDomain(savedEntity);
     }
 
     @Override
     public Optional<Event> findById(UUID id) {
-        Optional<JpaEventEntity> eventEntity = this.jpaEventRepository.findById(id);
-        return eventEntity.map(entity -> new Event(entity.getId(), entity.getTitle(), entity.getDescription(), entity.getImgUrl(), entity.getEventUrl(), entity.getRemote(), entity.getDate()).orElse(null));
+        return this.jpaEventRepository.findById(id)
+                .map(mapper::jpaToDomain);
     }
 
     @Override
     public List<Event> findAll() {
-        return this.jpaEventRepository.findALL()
+        return this.jpaEventRepository.findAll()
                 .stream()
-                .map(entity -> new Event(entity.getId(), entity.getTitle(), entity.getDescription(), entity.getImgUrl(), entity.getEventUrl(), entity.getRemote(), entity.getDate())
-                        .collect(Collectors.toList()));
-
+                .map(mapper::jpaToDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void deletById(UUID id) {
+    public void deleteById(UUID id) {
         this.jpaEventRepository.deleteById(id);
     }
 
     @Override
-    public Page<EventAdressProjection> findUpcomingEvents(int page, int size) {
-        Pageable pageable = PageRequest.of(page size);
+    public Page<EventAddressProjection> findUpcomingEvents(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return this.jpaEventRepository.findUpcomingEvents(new Date(), pageable);
     }
 
     @Override
     public Page<EventAddressProjection> findFilteredEvents(String city, String uf, Date startDate, Date endDate, int page, int size) {
-        Pageable pageable = PageRequest.of(page size);
+        Pageable pageable = PageRequest.of(page, size);
         return this.jpaEventRepository.findFilteredEvents(city, uf, startDate, endDate, pageable);
     }
 
     @Override
-    public List<EventAdressProjection> findEventsByTitle(String title) {
+    public List<EventAddressProjection> findEventsByTitle(String title) {
         return this.jpaEventRepository.findEventsByTitle(title);
     }
 }

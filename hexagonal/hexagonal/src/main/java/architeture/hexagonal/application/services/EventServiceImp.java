@@ -2,11 +2,15 @@ package architeture.hexagonal.application.services;
 
 import architeture.hexagonal.adapters.outbound.storage.ImageUploaderPort;
 import architeture.hexagonal.application.usecases.EventUseCases;
+import architeture.hexagonal.models.event.Event;
+import architeture.hexagonal.models.event.EventDetailsDTO;
+import architeture.hexagonal.models.event.EventRequestDTO;
+import architeture.hexagonal.models.event.EventResponseDTO;
+import architeture.hexagonal.utils.mappers.EventMapper;
+import architeture.hexagonal.models.event.EventRepository;
 import com.eventostec.api.domain.address.Address;
 import com.eventostec.api.domain.coupon.Coupon;
-import com.eventostec.api.domain.event.*;
-import com.eventostec.api.mappers.EventMapper;
-import com.eventostec.api.repositories.EventRepository;
+import architeture.hexagonal.models.event.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
