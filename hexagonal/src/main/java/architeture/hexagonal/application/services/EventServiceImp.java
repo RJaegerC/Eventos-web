@@ -9,6 +9,8 @@ import architeture.hexagonal.models.event.EventResponseDTO;
 import architeture.hexagonal.utils.mappers.EventMapper;
 import architeture.hexagonal.models.event.EventRepository;
 import architeture.hexagonal.models.adress.Address;
+import architeture.hexagonal.application.services.AddressService;
+import architeture.hexagonal.application.services.CouponService;
 import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.event.*;
 import lombok.RequiredArgsConstructor;
