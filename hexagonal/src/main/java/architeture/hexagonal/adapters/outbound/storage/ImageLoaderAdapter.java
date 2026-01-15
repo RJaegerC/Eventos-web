@@ -1,0 +1,41 @@
+package architeture.hexagonal.adapters.outbound.storage;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class ImageLoaderAdapter {
+
+    @Value("${aws.bucket.name}")
+    private String bucketName;
+
+    private final S3Client s3Client;
+
+    private String uploadImg(MultipartFile multipartFile) {
+        String filename = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+
+        try {
+            PutObjectRequest putOb = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(filename)
+                    .build();
+            s3Client.putObject(putOb, RequestBody.fromByteBuffer(ByteBuffer.wrap(multipartFile.getBytes())));
+            GetUrlRequest request = GetUrlRequest.builder()
+                    .bucket(bucketName)
+                    .key(filename)
+                    .build();
+            return s3Client.utilities().getUrl(request).toString();
+        } catch (Exception e) {
+            log.error("erro ao subir arquivo: {}", e.getMessage());
+            return "";
+        }
+    }
+
+}
