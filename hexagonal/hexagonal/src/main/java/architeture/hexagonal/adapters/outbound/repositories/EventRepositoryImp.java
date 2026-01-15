@@ -1,7 +1,9 @@
 package architeture.hexagonal.adapters.outbound.repositories;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaEventEntity;
-import architeture.hexagonal.models.event.*;
+import architeture.hexagonal.models.event.Event;
+import architeture.hexagonal.models.event.EventAddressProjection;
+import architeture.hexagonal.models.event.EventRepository;
 import architeture.hexagonal.utils.mappers.EventMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

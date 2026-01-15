@@ -20,6 +20,13 @@ public interface EventUseCases {
 
     public List<EventResponseDTO> searchEvents(String title);
 
-    public List<EventResponseDTO> getFilteredEvents();
+    List<EventResponseDTO> getFilteredEvents(
+            int page,
+            int size,
+            String city,
+            String uf,
+            java.util.Date startDate,
+            java.util.Date endDate
+    );
 
 }

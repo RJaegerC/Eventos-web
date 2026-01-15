@@ -3,12 +3,15 @@ package architeture.hexagonal.application.services;
 import architeture.hexagonal.adapters.outbound.storage.ImageUploaderPort;
 import architeture.hexagonal.application.usecases.EventUseCases;
 import architeture.hexagonal.models.event.Event;
+import architeture.hexagonal.models.event.EventAddressProjection;
 import architeture.hexagonal.models.event.EventDetailsDTO;
 import architeture.hexagonal.models.event.EventRequestDTO;
 import architeture.hexagonal.models.event.EventResponseDTO;
 import architeture.hexagonal.utils.mappers.EventMapper;
 import architeture.hexagonal.models.event.EventRepository;
 import architeture.hexagonal.models.adress.Address;
+import architeture.hexagonal.application.services.AddressService;
+import architeture.hexagonal.application.services.CouponService;
 import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.event.*;
 import lombok.RequiredArgsConstructor;
@@ -74,59 +77,62 @@ public class EventServiceImp implements EventUseCases {
         Event event = repository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
-        Optional<Address> address = addressService.findByEventId(eventId);
+        Optional<Address> address =
+                addressService.findByEventId(eventId);
 
-        List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
+        List<Coupon> coupons =
+                couponService.consultCoupons(eventId, new Date());
 
-        return mapper.domainToDetailsDto(event, adress, coupons);
+        return mapper.domainToDetailsDto(event, address, coupons);
+    }
 
-    public void deleteEvent(UUID eventId, String adminKey){
-        if(adminKey == null || !adminKey.equals(this.adminKey)){
+    public void deleteEvent (UUID eventId, String adminKey){
+        if (adminKey == null || !adminKey.equals(this.adminKey)) {
             throw new IllegalArgumentException("Invalid admin key");
         }
 
         this.repository.deleteById(eventId);
-
     }
 
-    public List<EventResponseDTO> searchEvents(String title){
+    public List<EventResponseDTO> searchEvents(String title) {
         title = (title != null) ? title : "";
 
-        List<EventAddressProjection> eventsList = this.repository.findEventsByTitle(title);
+        List<EventAddressProjection> eventsList =
+                repository.findEventsByTitle(title);
+
         return eventsList.stream().map(event -> new EventResponseDTO(
-                        event.getId(),
-                        event.getTitle(),
-                        event.getDescription(),
-                        event.getDate(),
-                        event.getCity() != null ? event.getCity() : "",
-                        event.getUf() != null ? event.getUf() : "",
-                        event.getRemote(),
-                        event.getEventUrl(),
-                        event.getImgUrl())
-                )
-                .toList();
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDate(),
+                event.getCity() != null ? event.getCity() : "",
+                event.getUf() != null ? event.getUf() : "",
+                event.getRemote(),
+                event.getEventUrl(),
+                event.getImgUrl()
+        )).toList();
     }
 
-    public List<EventResponseDTO> getFilteredEvents(int page, int size, String city, String uf, Date startDate, Date endDate){
-        city = (city != null) ? city : "";
-        uf = (uf != null) ? uf : "";
-        startDate = (startDate != null) ? startDate : new Date(0);
-        endDate = (endDate != null) ? endDate : new Date();
+    public List<EventResponseDTO> getFilteredEvents ( int page, int size, String city, String uf, Date
+        startDate, Date endDate){
+            city = (city != null) ? city : "";
+            uf = (uf != null) ? uf : "";
+            startDate = (startDate != null) ? startDate : new Date(0);
+            endDate = (endDate != null) ? endDate : new Date();
 
-        Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, page, size);
-        return eventsPage.map(event -> new EventResponseDTO(
-                        event.getId(),
-                        event.getTitle(),
-                        event.getDescription(),
-                        event.getDate(),
-                        event.getCity() != null ? event.getCity() : "",
-                        event.getUf() != null ? event.getUf() : "",
-                        event.getRemote(),
-                        event.getEventUrl(),
-                        event.getImgUrl())
-                )
-                .stream().toList();
-    }
+            Page<EventAddressProjection> eventsPage = this.repository.findFilteredEvents(city, uf, startDate, endDate, page, size);
+            return eventsPage.map(event -> new EventResponseDTO(
+                            event.getId(),
+                            event.getTitle(),
+                            event.getDescription(),
+                            event.getDate(),
+                            event.getCity() != null ? event.getCity() : "",
+                            event.getUf() != null ? event.getUf() : "",
+                            event.getRemote(),
+                            event.getEventUrl(),
+                            event.getImgUrl()
+            )).stream().toList();
+        }
 
 
 

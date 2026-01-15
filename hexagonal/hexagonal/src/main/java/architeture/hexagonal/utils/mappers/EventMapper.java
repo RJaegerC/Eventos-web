@@ -1,6 +1,8 @@
 package architeture.hexagonal.utils.mappers;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaEventEntity;
+import architeture.hexagonal.models.adress.Address;
+import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.event.EventDetailsDTO;
 import architeture.hexagonal.models.event.Event;
 import architeture.hexagonal.models.event.EventRequestDTO;
@@ -41,9 +43,9 @@ public interface EventMapper {
     @Mapping(source = "jpa.imgUrl", target = "imgUrl")
     Event jpaToDomain(JpaEventEntity jpa);
 
-    default EventDetailsDTO domainToDetailsDto(Event event, Optional<Adress> adress, List<Coupon> coupons) {
-        String city = adress.map(Adress::getCity).orElse("");
-        String uf = adress.map(Adress::getUf).orElse("");
+    default EventDetailsDTO domainToDetailsDto(Event event, Optional<Address> address, List<Coupon> coupons) {
+        String city = address.map(Address::getCity).orElse("");
+        String uf = address.map(Address::getUf).orElse("");
         List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()
                 .map(coupon -> new EventDetailsDTO.CouponDTO(
                         coupon.getCode(),
