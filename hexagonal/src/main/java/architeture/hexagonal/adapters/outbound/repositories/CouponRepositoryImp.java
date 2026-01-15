@@ -1,6 +1,7 @@
 package architeture.hexagonal.adapters.outbound.repositories;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaCouponEntity;
+import architeture.hexagonal.models.event.Event;
 import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.coupon.CouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,7 @@ public class CouponRepositoryImp implements CouponRepository {
 
     @Override
     public List<Coupon> findByEventIdAndValidAfter(UUID eventId, Date currentDate) {
-        return this.jpaCouponRepository.findByEventIdAndValidAfter(eventId, currentDate)
-                .map(this::toDomain);
+        return this.jpaCouponRepository.findByEventIdAndValidAfter(eventId, currentDate);
     }
 
     private Coupon toDomain(JpaCouponEntity entity) {
@@ -37,7 +37,7 @@ public class CouponRepositoryImp implements CouponRepository {
                 entity.getValid(),
                 entity.getEvent().getId()
         );
-    }
 
+    }
 
 }

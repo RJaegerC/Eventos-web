@@ -27,9 +27,7 @@ public class CouponService {
         coupon.setCode(couponData.code());
         coupon.setDiscount(couponData.discount());
         coupon.setValid(new Date(couponData.valid()));
-        coupon.setEvent(event);
-
-        return couponRepository.save(coupon);
+        return coupon;
     }
 
     public List<Coupon> consultCoupons(UUID eventId, Date currentDate) {

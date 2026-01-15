@@ -1,11 +1,14 @@
 package architeture.hexagonal.utils.mappers;
 
 import architeture.hexagonal.adapters.outbound.entities.JpaEventEntity;
+import architeture.hexagonal.models.adress.Address;
+import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.event.EventDetailsDTO;
 import architeture.hexagonal.models.event.Event;
 import architeture.hexagonal.models.event.EventRequestDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
 import java.util.Date;
@@ -16,34 +19,40 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "dto.title", target = "title")
-    @Mapping(source = "dto.description", target = "description")
-    @Mapping(target = "imgUrl", source = "imgUrl")
-    @Mapping(source = "dto.eventUrl", target = "eventUrl")
-    @Mapping(source = "dto.date", target = "date", qualifiedByName = "epochToDate")
-    @Mapping(source = "dto.remote", target = "remote")
+@Mappings({
+        @Mapping(target = "id", ignore = true),
+        @Mapping(source = "dto.title", target = "title"),
+        @Mapping(source = "dto.description", target = "description"),
+        @Mapping(target = "imgUrl", source = "imgUrl"),
+        @Mapping(source = "dto.eventUrl", target = "eventUrl"),
+        @Mapping(source = "dto.date", target = "date", qualifiedByName = "epochToDate"),
+        @Mapping(source = "dto.remote", target = "remote"),
+})
     Event dtoToEntity(EventRequestDTO dto, String imgUrl);
 
-    @Mapping(source = "entity.title", target = "title")
-    @Mapping(source = "entity.description", target = "description")
-    @Mapping(source = "entity.eventUrl", target = "eventUrl")
-    @Mapping(source = "entity.date", target = "date", qualifiedByName = "dateToEpoch")
-    @Mapping(source = "entity.remote", target = "remote")
+@Mappings({
+        @Mapping(source = "entity.title", target = "title"),
+        @Mapping(source = "entity.description", target = "description"),
+        @Mapping(source = "entity.eventUrl", target = "eventUrl"),
+        @Mapping(source = "entity.date", target = "date", qualifiedByName = "dateToEpoch"),
+        @Mapping(source = "entity.remote", target = "remote"),
+})
     EventRequestDTO toDto(Event entity);
 
-    @Mapping(source = "jpa.title", target = "title")
-    @Mapping(source = "jpa.description", target = "description")
-    @Mapping(source = "jpa.eventUrl", target = "eventUrl")
-    @Mapping(source = "jpa.date", target = "date", qualifiedByName = "dateToEpoch")
-    @Mapping(source = "jpa.remote", target = "remote")
-    @Mapping(source = "jpa.id", target = "id")
-    @Mapping(source = "jpa.imgUrl", target = "imgUrl")
+@Mappings({
+        @Mapping(source = "jpa.title", target = "title"),
+        @Mapping(source = "jpa.description", target = "description"),
+        @Mapping(source = "jpa.eventUrl", target = "eventUrl"),
+        @Mapping(source = "jpa.date", target = "date", qualifiedByName = "dateToEpoch"),
+        @Mapping(source = "jpa.remote", target = "remote"),
+        @Mapping(source = "jpa.id", target = "id"),
+        @Mapping(source = "jpa.imgUrl", target = "imgUrl"),
+})
     Event jpaToDomain(JpaEventEntity jpa);
 
-    default EventDetailsDTO domainToDetailsDto(Event event, Optional<Adress> adress, List<Coupon> coupons) {
-        String city = adress.map(Adress::getCity).orElse("");
-        String uf = adress.map(Adress::getUf).orElse("");
+    default EventDetailsDTO domainToDetailsDto(Event event, Optional<Address> address, List<Coupon> coupons) {
+        String city = address.map(Address::getCity).orElse("");
+        String uf = address.map(Address::getUf).orElse("");
         List<EventDetailsDTO.CouponDTO> couponDTOs = coupons.stream()
                 .map(coupon -> new EventDetailsDTO.CouponDTO(
                         coupon.getCode(),

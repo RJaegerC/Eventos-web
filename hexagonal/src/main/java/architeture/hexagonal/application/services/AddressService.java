@@ -20,8 +20,6 @@ public class AddressService {
         Address address = new Address();
         address.setCity(data.city());
         address.setUf(data.state());
-        address.setEvent(event);
-        addressRepository.save(address);
     }
 
     public Optional<Address> findByEventId(UUID eventId) {
