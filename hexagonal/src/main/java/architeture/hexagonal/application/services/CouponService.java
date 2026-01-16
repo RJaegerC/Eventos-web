@@ -1,5 +1,6 @@
 package architeture.hexagonal.application.services;
 
+import architeture.hexagonal.application.usecases.CouponUseCases;
 import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.coupon.CouponRequestDTO;
 import architeture.hexagonal.models.coupon.CouponRepository;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class CouponService {
+public class CouponService implements CouponUseCases {
 
     private final CouponRepository couponRepository;
     private final EventRepository eventRepository;
