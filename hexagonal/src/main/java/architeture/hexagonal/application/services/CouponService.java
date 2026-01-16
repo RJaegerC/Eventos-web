@@ -5,19 +5,23 @@ import architeture.hexagonal.models.coupon.CouponRequestDTO;
 import architeture.hexagonal.models.coupon.CouponRepository;
 import architeture.hexagonal.models.event.Event;
 import architeture.hexagonal.models.event.EventRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
 public class CouponService {
 
     private final CouponRepository couponRepository;
     private final EventRepository eventRepository;
+
+    public CouponService(
+            CouponRepository couponRepository,
+            EventRepository eventRepository
+    ) {
+        this.couponRepository = couponRepository;
+        this.eventRepository = eventRepository;
+    }
 
     public Coupon addCouponToEvent(UUID eventId, CouponRequestDTO couponData) {
         Event event = eventRepository.findById(eventId)
@@ -27,6 +31,7 @@ public class CouponService {
         coupon.setCode(couponData.code());
         coupon.setDiscount(couponData.discount());
         coupon.setValid(new Date(couponData.valid()));
+        coupon.setEventId(event.getId());
         return coupon;
     }
 
