@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.core.sync.RequestBody;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -24,16 +27,23 @@ public class ImageLoaderAdapter {
         String filename = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
 
         try {
-            PutObjectRequest putOb = PutObjectRequest.builder()
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(filename)
+                    .contentType(multipartFile.getContentType())
+                    .build();
+
+            s3Client.putObject(
+                    putObjectRequest,
+                    RequestBody.fromBytes(multipartFile.getBytes())
+            );
+
+            GetUrlRequest urlRequest = GetUrlRequest.builder()
                     .bucket(bucketName)
                     .key(filename)
                     .build();
-            s3Client.putObject(putOb, RequestBody.fromByteBuffer(ByteBuffer.wrap(multipartFile.getBytes())));
-            GetUrlRequest request = GetUrlRequest.builder()
-                    .bucket(bucketName)
-                    .key(filename)
-                    .build();
-            return s3Client.utilities().getUrl(request).toString();
+
+            return s3Client.utilities().getUrl(urlRequest).toString();
         } catch (Exception e) {
             log.error("erro ao subir arquivo: {}", e.getMessage());
             return "";
