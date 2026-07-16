@@ -1,6 +1,7 @@
 package architeture.hexagonal.adapters.inbound.services;
 
 import architeture.hexagonal.application.services.CouponService;
+import architeture.hexagonal.application.usecases.CouponUseCases;
 import architeture.hexagonal.models.coupon.Coupon;
 import architeture.hexagonal.models.coupon.CouponRepository;
 import architeture.hexagonal.models.coupon.CouponRequestDTO;
@@ -12,9 +13,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class CouponServiceImp {
+public class CouponServiceImp implements CouponUseCases {
 
-    private final CouponService useCase;
+    private final CouponUseCases useCase;
 
     public CouponServiceImp(
             CouponRepository couponRepository,
@@ -26,10 +27,12 @@ public class CouponServiceImp {
         );
     }
 
+    @Override
     public Coupon addCouponToEvent(UUID eventId, CouponRequestDTO couponData) {
         return useCase.addCouponToEvent(eventId, couponData);
     }
 
+    @Override
     public List<Coupon> consultCoupons(UUID eventId, Date currentDate) {
         return useCase.consultCoupons(eventId, currentDate);
     }
